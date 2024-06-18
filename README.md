@@ -2,12 +2,22 @@
 Python script that downloads from youtube
 
 ## Features
+
 Audio with metadata including the Artwork
+
 High resolutions are available like it can download 4k videos
 
 ## libraries (included in .venv)
-pytube
-eyed3
+
+#pytube
+'''bash
+pip install pytube
+'''
+
+#eyed3
+'''bash
+pip install eyed3
+'''
 
 ## Must have
 ffmpeg installed on your machine
