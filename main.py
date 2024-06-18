@@ -3,27 +3,6 @@ import os
 from audio_convert import convert
 from metadata_to_audio import add_meta
 from video_merge import merge
-"""
-link
-title
-v or a
-quality
-captions?
-where to download
-Progress Bar
-done
-
-combine 
-def combine_audio(vidname, audname, outname, fps=25):
-    import moviepy.editor as mpe
-    my_clip = mpe.VideoFileClip(vidname)
-    audio_background = mpe.AudioFileClip(audname)
-    final_clip = my_clip.set_audio(audio_background)
-    final_clip.write_videofile(outname,fps=fps)
-
->>> caption = yt.captions.get_by_language_code('en')
->>> print(caption.generate_srt_captions())
-"""
 
 
 def vid_or_audio():
