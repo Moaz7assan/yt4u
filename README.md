@@ -9,12 +9,12 @@ High resolutions are available like it can download 4k videos
 
 ## libraries (included in .venv)
 
-# pytube
+### pytube
 ```bash
 pip install pytube
 ```
 
-# eyed3
+### eyed3
 ```bash
 pip install eyed3
 ```
