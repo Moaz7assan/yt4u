@@ -1,6 +1,8 @@
-from pytube import YouTube
+from pytube import YouTube, Channel
 import os
-import ffmpeg
+from audio_convert import convert
+from metadata_to_audio import add_meta
+from video_merge import merge
 """
 link
 title
@@ -39,7 +41,7 @@ def vid_or_audio():
 def quality(yt, type):
     if type == 'video':
         viddict = {}
-        for stream in yt.streams.filter(type=type, progressive=True):
+        for stream in yt.streams.filter(only_video=True, video_codec='vp9'):
             print(stream.resolution)
             viddict.setdefault(stream.resolution, stream.itag)
         while True:
@@ -50,19 +52,15 @@ def quality(yt, type):
                 print('enter a valid resolution')
         return viddict.get(resolution)
     elif type == 'audio':
-        audiodict = {}
-        for stream in yt.streams.filter(file_extension='mp4', type=type):
-            audiodict.setdefault(stream.abr, stream.itag)
-            print(stream.abr)
-        while True:
-            bitrate = input('\nchoose bitrate >> ')
-            if bitrate in audiodict.keys():
-                break
-            else:
-                print('enter a valid bitrate')
-        return audiodict.get(bitrate)
+        audiolist = []
+        for stream in yt.streams.filter(only_audio=True).order_by('abr').asc():
+            audiolist.append(stream.itag)
+            bitrate = stream.abr
+        print(f'{bitrate} Found!\n')
+        return audiolist[0]
 
-# this func i don't fully understand it
+
+# some math shit
 def on_progress(vid, chunk, bytes_remaining):
     total_size = vid.filesize
     bytes_downloaded = total_size - bytes_remaining
@@ -81,33 +79,36 @@ def main():
     ytlink = input('link >> ')
     yt = YouTube(ytlink, on_progress_callback=on_progress)
     print('\n', yt.title, '\n')
+
     type = vid_or_audio()
     stream_tag = quality(yt, type)
     stream = yt.streams.get_by_itag(stream_tag)
-    output_path = input('output path (default : same directory) >> ')
+    output_path = input('output path (default : output/ ) >> ')
     if output_path == '':
-        output_path = './output/'
-    
-    stream.download(output_path=output_path)
+        output_path = 'output/'
 
-    # if type == 'video':
-    #     name = stream.title + f'({stream.resolution})' + '.mp4'
-    #     stream.download(output_path=output_path, filename=name)
-    # elif type == 'audio':
-    #     stream.download(output_path=output_path)
-    #     if os.path.exists(f'{output_path}{stream.title}.mp4'):
-    #         input_file = f'{output_path}{stream.title}.mp4'
-    #         output_file = f'{output_path}{stream.title}.mp3'
-    #         input_file_encoded = input_file.encode('utf-8')  # Encode filename to UTF-8
-    #         output_file_encoded = output_file.encode('utf-8')  # Encode filename to UTF-8
-    #         (
-    #             ffmpeg.input(input_file_encoded.decode('utf-8'))  # Decode filename to string
-    #             .output(output_file_encoded.decode('utf-8'))  # Decode filename to string
-    #             .run(overwrite_output=True)
-    #         )
-    #         os.remove(input_file)
+    if type == 'audio':
+        stream.download(output_path=output_path, filename=f'{yt.title}.mp4')
+        convert(output_folder=output_path, audio_name=yt.title)
+        add_meta(file=os.path.join(output_path, yt.title + '.mp3') ,yt=yt, output_path=output_path)
+    
+    if type == 'video':
+        stream.download(output_path=output_path, filename=f'{yt.title} Video.mp4')
+
+        audiolist = []
+        for stream in yt.streams.filter(only_audio=True).order_by('abr').asc():
+            audiolist.append(stream.itag)
+        audiostream = yt.streams.get_by_itag(audiolist[0])
+        audiostream.download(output_path=output_path, filename=f'{yt.title} Audio.mp4')
+
+        convert(output_folder=output_path, audio_name=f'{yt.title} Audio')
+
+        video_path = os.path.join(output_path, f'{yt.title} Video.mp4')
+        audio_path = os.path.join(output_path, f'{yt.title} Audio.mp3')
+        output = os.path.join(output_path, f'{yt.title}.mp4')
+
+        merge(video=video_path, audio=audio_path, output=output)
 
     print('\nDone ...')
-
 
 main()
