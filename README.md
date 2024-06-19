@@ -7,7 +7,7 @@ Audio with metadata including the Artwork
 
 High resolutions are available like it can download 4k videos
 
-## libraries (included in .venv)
+## libraries
 
 ### pytube
 ```bash
