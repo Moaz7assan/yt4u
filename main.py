@@ -1,8 +1,9 @@
-from pytube import YouTube, Channel
+from pytube import YouTube
 import os
 from audio_convert import convert
 from metadata_to_audio import add_meta
 from video_merge import merge
+from captions import get_captions
 
 
 def vid_or_audio():
@@ -55,19 +56,35 @@ def on_progress(vid, chunk, bytes_remaining):
 
 
 def video(output_path, yt, stream):
-    stream.download(output_path=output_path, filename=f'{yt.title} Video.mp4')
+
+    # Searching For Captions
+    cap = yt.caption_tracks
+    if cap != []:
+        choice = ''
+        print('\nThere are some Captions that have been Found !!')
+        for lang in cap:
+            print(f"- {lang.name}")
+        while choice != 'y' and choice != 'n':
+            choice = input('Do you want to download these Captions? (y/n)\n>> ')
+            match choice.lower():
+                case 'y':
+                    final_path = get_captions(yt=yt, output_path=output_path)
+                case 'n':
+                    final_path = output_path
+                
+    stream.download(output_path=final_path, filename=f'{yt.title} Video.mp4')
 
     audiolist = []
     for stream in yt.streams.filter(only_audio=True).order_by('abr').asc():
         audiolist.append(stream.itag)
     audiostream = yt.streams.get_by_itag(audiolist[0])
-    audiostream.download(output_path=output_path, filename=f'{yt.title} Audio.mp4')
+    audiostream.download(output_path=final_path, filename=f'{yt.title} Audio.mp4')
 
-    convert(output_folder=output_path, audio_name=f'{yt.title} Audio')
+    convert(output_folder=final_path, audio_name=f'{yt.title} Audio')
 
-    video_path = os.path.join(output_path, f'{yt.title} Video.mp4')
-    audio_path = os.path.join(output_path, f'{yt.title} Audio.mp3')
-    output = os.path.join(output_path, f'{yt.title}.mp4')
+    video_path = os.path.join(final_path, f'{yt.title} Video.mp4')
+    audio_path = os.path.join(final_path, f'{yt.title} Audio.mp3')
+    output = os.path.join(final_path, f'{yt.title}.mp4')
 
     merge(video=video_path, audio=audio_path, output=output)
     
@@ -81,6 +98,7 @@ def audio(output_path, yt, stream):
 def main():
     ytlink = input('link >> ')
     yt = YouTube(ytlink, on_progress_callback=on_progress)
+    yt.bypass_age_gate()
     print('\n', yt.title, '\n')
 
     type = vid_or_audio()
