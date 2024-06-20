@@ -54,6 +54,30 @@ def on_progress(vid, chunk, bytes_remaining):
     print(f'Download Progress: {percentage_of_completion}%, Total Size:{totalsz} MB, Downloaded: {dwnd} MB, Remaining:{remain} MB')
 
 
+def video(output_path, yt, stream):
+    stream.download(output_path=output_path, filename=f'{yt.title} Video.mp4')
+
+    audiolist = []
+    for stream in yt.streams.filter(only_audio=True).order_by('abr').asc():
+        audiolist.append(stream.itag)
+    audiostream = yt.streams.get_by_itag(audiolist[0])
+    audiostream.download(output_path=output_path, filename=f'{yt.title} Audio.mp4')
+
+    convert(output_folder=output_path, audio_name=f'{yt.title} Audio')
+
+    video_path = os.path.join(output_path, f'{yt.title} Video.mp4')
+    audio_path = os.path.join(output_path, f'{yt.title} Audio.mp3')
+    output = os.path.join(output_path, f'{yt.title}.mp4')
+
+    merge(video=video_path, audio=audio_path, output=output)
+    
+
+def audio(output_path, yt, stream):
+    stream.download(output_path=output_path, filename=f'{yt.title}.mp4')
+    convert(output_folder=output_path, audio_name=yt.title)
+    add_meta(file=os.path.join(output_path, yt.title + '.mp3') ,yt=yt, output_path=output_path)
+
+
 def main():
     ytlink = input('link >> ')
     yt = YouTube(ytlink, on_progress_callback=on_progress)
@@ -67,26 +91,10 @@ def main():
         output_path = 'output/'
 
     if type == 'audio':
-        stream.download(output_path=output_path, filename=f'{yt.title}.mp4')
-        convert(output_folder=output_path, audio_name=yt.title)
-        add_meta(file=os.path.join(output_path, yt.title + '.mp3') ,yt=yt, output_path=output_path)
+        audio(output_path=output_path, yt=yt, stream=stream)
     
     if type == 'video':
-        stream.download(output_path=output_path, filename=f'{yt.title} Video.mp4')
-
-        audiolist = []
-        for stream in yt.streams.filter(only_audio=True).order_by('abr').asc():
-            audiolist.append(stream.itag)
-        audiostream = yt.streams.get_by_itag(audiolist[0])
-        audiostream.download(output_path=output_path, filename=f'{yt.title} Audio.mp4')
-
-        convert(output_folder=output_path, audio_name=f'{yt.title} Audio')
-
-        video_path = os.path.join(output_path, f'{yt.title} Video.mp4')
-        audio_path = os.path.join(output_path, f'{yt.title} Audio.mp3')
-        output = os.path.join(output_path, f'{yt.title}.mp4')
-
-        merge(video=video_path, audio=audio_path, output=output)
+        video(output_path=output_path, yt=yt, stream=stream)
 
     print('\nDone ...')
 
