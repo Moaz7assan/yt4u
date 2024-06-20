@@ -7,6 +7,8 @@ Audio with metadata including the Artwork
 
 High resolutions are available like it can download 4k videos
 
+Captions are available
+
 uses vp9 codec stream
 
 merge the video with the highest audio stream available to get the best result
