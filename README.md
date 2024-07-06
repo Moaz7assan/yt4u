@@ -9,6 +9,12 @@ Python script that downloads from youtube
 
 - Captions are available
 
+- Playlist auto detector
+
+- Download Playlists
+
+- Download albums as audio with its metadata
+
 - uses vp9 codec stream
 
 - merge the video with the highest audio stream available to get the best result
