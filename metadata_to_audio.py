@@ -3,7 +3,10 @@ import urllib.request
 import eyed3
 import os
 
-def add_meta(file, yt, output_path):
+def add_meta(file, yt, output_path, album=''):
+    title = yt.title
+    if '/' in yt.title:
+        title = title.replace('/', '')
 
     ch = Channel(url=f'https://www.youtube.com/channel/{yt.channel_id}')
 
@@ -35,23 +38,26 @@ def add_meta(file, yt, output_path):
     img_url = f'https://img.youtube.com/vi/{yt.video_id}/hqdefault.jpg'
 
     # Downloading the Artwork
-    artwork = f"{output_path}/{yt.title} Artwork.png"
+    artwork = f"{output_path}/{title} Artwork.png"
     urllib.request.urlretrieve(img_url, artwork)
 
-    print(f'''
-Metadata Found !
-    Artist : {artist}
-    Release Date : {release_date}
-    Artwork Found
-''')
+
+    if album == '':
+        text = f'Metadata Found !\n   Artist : {artist}\n   Release Date : {release_date}\n   Artwork Found'
+    else:
+        text = f'Metadata Found !\n   Artist : {artist}\n   Album : {album}\n   Release Date : {release_date}\n   Artwork Found'
+    print(text)
 
     # Adding the metadata
     audiofile = eyed3.load(file)
     audiofile.tag.artist = artist
-    audiofile.tag.album = yt.title
     audiofile.tag.release_date = release_date
     with open(artwork, "rb") as cover_art:
         audiofile.tag.images.set(1, cover_art.read(), "image/png")
+    if album != '':
+        audiofile.tag.album = yt.title
+    else:
+        audiofile.tag.album = album
 
     audiofile.tag.save()
 

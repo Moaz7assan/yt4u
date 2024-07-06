@@ -35,14 +35,18 @@ def convert_xml_to_srt(xml_file, srt_file):
 
 
 def get_captions(yt, output_path):
+    title = yt.title
+    if '/' in yt.title:
+        title = title.replace('/', '')
+    
     cap = yt.caption_tracks
-    final_path = os.path.join(output_path, yt.title)
+    final_path = os.path.join(output_path, title)
     try:
         os.mkdir(final_path)
     except OSError as error:
         pass 
     for lang in cap:
-        lang_path = os.path.join(os.path.join(output_path, yt.title), lang.name)
+        lang_path = os.path.join(os.path.join(output_path, title), lang.name)
         try:
             os.mkdir(lang_path)
         except OSError as error:
