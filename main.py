@@ -54,7 +54,7 @@ def playlist_quality(plist, type):
         if resolutiondict != {}:
             return resolutiondict.get(resolution)
         else:
-            print('!! No vp9 codec found\n ** the script will download the highest resolution automatically')
+            print('!! No vp9 codec found\n** the script will download the highest resolution automatically')
             return False
 
 
@@ -70,7 +70,7 @@ def on_progress(vid, chunk, bytes_remaining):
     dwnd = (bytes_downloaded / 1024) / 1024
     dwnd = round(dwnd, 1)
     percentage_of_completion = round(percentage_of_completion,2)
-    print(f'( {percentage_of_completion}% ), Downloaded: {dwnd} MB out of {totalsz} MB, ')
+    print(f'( {percentage_of_completion}% ), Downloaded: {dwnd} MB out of {totalsz} MB ')
 
 
 def caption_search(yt, output_path):
@@ -87,6 +87,7 @@ def caption_search(yt, output_path):
                     return get_captions(yt=yt, output_path=output_path)
                 case 'n':
                     return output_path
+    return output_path
 
 
 def video(output_path, yt, stream):
