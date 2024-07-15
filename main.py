@@ -1,4 +1,4 @@
-from pytube import YouTube, Playlist
+from pytubefix import YouTube, Playlist
 import os
 from audio_convert import convert
 from metadata_to_audio import add_meta
@@ -162,10 +162,11 @@ def grab_playlist(plist):
 
 
             if stream_tag != False:
-                try:
-                    stream = yt.streams.get_by_itag(stream_tag)
-                except:
-                    stream = yt.streams.get_highest_resolution()
+                if type == 'video':
+                    try:
+                        stream = yt.streams.get_by_itag(stream_tag)
+                    except:
+                        stream = yt.streams.get_highest_resolution()
             else:
                 stream = yt.streams.get_highest_resolution()
 
@@ -204,7 +205,7 @@ def main():
         grab_playlist(plist)
     else:
         yt = YouTube(ytlink, on_progress_callback=on_progress)
-        yt.bypass_age_gate()
+        # yt.bypass_age_gate()
         print('\n', yt.title, '\n')
         is_playlist = playlist_checker(ytlink)
 
@@ -212,7 +213,8 @@ def main():
             type = vid_or_audio()
             stream_tag = quality(yt, type)
             if stream_tag != False:
-                stream = yt.streams.get_by_itag(stream_tag)
+                if type == 'video':
+                    stream = yt.streams.get_by_itag(stream_tag)
             else:
                 stream = yt.streams.get_highest_resolution()
             
