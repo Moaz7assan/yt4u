@@ -152,7 +152,7 @@ def grab_playlist(plist):
     for vid in plist.videos:
             path = output_path
             yt = YouTube(vid.watch_url, on_progress_callback=on_progress)
-            yt.bypass_age_gate()
+            # yt.bypass_age_gate()
 
             if captions == True:
                 cap = yt.caption_tracks
