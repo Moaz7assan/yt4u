@@ -38,7 +38,7 @@ def playlist_quality(plist, type):
         resolutiondict = {}
         for vid in plist.videos:
             yt = YouTube(vid.watch_url, on_progress_callback=on_progress)
-            yt.bypass_age_gate()
+            # yt.bypass_age_gate()
             for stream in yt.streams.filter(only_video=True, video_codec='vp9'):
                 resolutiondict.update({stream.resolution : stream.itag})
 
