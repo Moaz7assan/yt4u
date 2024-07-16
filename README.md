@@ -21,9 +21,9 @@ Python script that downloads from youtube
 
 ## libraries
 
-### pytube
+### pytubefix
 ```bash
-pip install pytube
+pip install pytubefix
 ```
 
 ### eyed3
