@@ -1,4 +1,4 @@
-from pytubefix import YouTube, Playlist
+from pytube import YouTube, Playlist
 import os
 from audio_convert import convert
 from metadata_to_audio import add_meta
