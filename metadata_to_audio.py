@@ -1,4 +1,4 @@
-from pytube import Channel
+from pytubefix import Channel
 import urllib.request
 import eyed3
 import os
