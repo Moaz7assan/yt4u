@@ -1,5 +1,5 @@
 # yt4u
-Python script that downloads from youtube
+Python script that downloads from youtube using pytube lib
 
 ## Features
 
