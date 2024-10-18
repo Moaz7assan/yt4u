@@ -1,5 +1,5 @@
 from pytubefix import YouTube, Playlist
-import os
+import os, sys
 from audio_convert import convert
 from metadata_to_audio import add_meta
 from video_merge import merge
@@ -70,7 +70,8 @@ def on_progress(vid, chunk, bytes_remaining):
     dwnd = (bytes_downloaded / 1024) / 1024
     dwnd = round(dwnd, 1)
     percentage_of_completion = round(percentage_of_completion,2)
-    print(f'( {percentage_of_completion}% ), Downloaded: {dwnd} MB out of {totalsz} MB ')
+    sys.stdout.write(f'\r( {percentage_of_completion}% ) Downloaded: {dwnd} MB out of {totalsz} MB - Remaining: {remain} MB')
+    sys.stdout.flush()
 
 
 def caption_search(yt, output_path):
